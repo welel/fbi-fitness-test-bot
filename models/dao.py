@@ -28,11 +28,17 @@ class UserDataAccessObject:
 
     @classmethod
     def update(cls, user: User) -> User:
-        cls.collection.update_one({"id": user.id}, {"$set": user.dict()})
+        result = cls.collection.update_one(
+            {"id": user.id}, {"$set": user.dict()}
+        )
+        if not result.matched_count:
+            raise UserDoesNotExists(user.id)
         return user
 
     @classmethod
     def get(cls, id: int) -> User:
+        if not isinstance(id, int):
+            raise ValueError
         user_data = cls.collection.find_one({"id": id})
         if not user_data:
             raise UserDoesNotExists(id=id)
