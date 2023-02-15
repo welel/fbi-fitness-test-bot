@@ -14,3 +14,21 @@ class NoSuchResource(Exception):
         self.resource_name = resource_name
         self.message = f"Resource with name {resource_name} is missing."
         super().__init__(self.message, *args, **kwargs)
+
+
+class UserAlreadyExists(Exception):
+    """Raises when attempts to create a user with existing in the db user id."""
+
+    def __init__(self, id: int, *args, **kwargs):
+        self.user_id = id
+        self.message = f"User with id {id} is already exists in the database."
+        super().__init__(self.message, *args, **kwargs)
+
+
+class UserDoesNotExists(Exception):
+    """Raises when attempts to get a user with non-existing in the db user id."""
+
+    def __init__(self, id: int, *args, **kwargs):
+        self.user_id = id
+        self.message = f"User with id {id} doesn't exists in the database."
+        super().__init__(self.message, *args, **kwargs)

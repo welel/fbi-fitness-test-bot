@@ -1,4 +1,4 @@
-from aiogram import Router
+from aiogram import Bot, Router
 from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
 
@@ -16,8 +16,7 @@ async def process_start_command(message: Message):
 
 
 @router.message(Command(commands=["table"]))
-async def process_start_command(message: Message):
-    image_file = get_table_image()
-    print(image_file)
+async def process_start_command(message: Message, bot: Bot):
+    """Sends a scoring table image."""
     await message.answer(LEXICON_EN["table_caption"])
-    # await message.send_photo(message.chat.id, image_file)
+    await bot.send_photo(message.chat.id, get_table_image())

@@ -3,6 +3,8 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+from pymongo import MongoClient
+from pymongo.database import Database as MongoDatabase
 
 from errors.errors import ImproperlyConfigured, NoSuchResource
 
@@ -23,6 +25,12 @@ def get_env_variable(var_name: str) -> str:
         return os.environ[var_name]
     except KeyError:
         raise ImproperlyConfigured(var_name)
+
+
+@dataclass
+class Database:
+    client: MongoClient
+    db: MongoDatabase
 
 
 @dataclass
@@ -47,6 +55,7 @@ class TelegramBot:
 @dataclass
 class Config:
     tg_bot: TelegramBot
+    db: Database
     resource_manager: ResourceManager
 
 
@@ -61,11 +70,16 @@ def load_config() -> Config:
     token: str = get_env_variable("BOT_TOKEN")
     tg_bot: TelegramBot = TelegramBot(token=token)
 
+    # MongoDB configucation
+    client: MongoClient = MongoClient(get_env_variable("CONNECTION_STRING"))
+    mongodb: MongoDatabase = client[get_env_variable("DATABASE_NAME")]
+    db: Database = Database(client=client, db=mongodb)
+
     # Resource manager configuration
-    RESOURCES_PATH: str = os.path.join("resources/")
+    RESOURCES_PATH: str = os.path.join(BASE_DIR, "resources/")
     resources: dict[str, str] = {"table_image": "fitness_test_table.png"}
     resources_manager: ResourceManager = ResourceManager(
         RESOURCES_PATH=RESOURCES_PATH, resources=resources
     )
 
-    return Config(tg_bot=tg_bot, resource_manager=resources_manager)
+    return Config(tg_bot=tg_bot, db=db, resource_manager=resources_manager)
