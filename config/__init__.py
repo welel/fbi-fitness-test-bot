@@ -1,1 +1,1 @@
-from .config import Config, Database, load_config
+from .config import Config, MongoDB, load_config

@@ -3,13 +3,11 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from pymongo import MongoClient
-from pymongo.database import Database as MongoDatabase
 
 from errors.errors import ImproperlyConfigured, NoSuchResource
 
 
-def get_env_variable(var_name: str) -> str:
+def get_env_variable(var_name: str, cast_to=str) -> str:
     """Get an environment variable or raise an exception.
 
     Args:
@@ -22,15 +20,24 @@ def get_env_variable(var_name: str) -> str:
         ImproperlyConfigured: if the environment variable is not set.
     """
     try:
-        return os.environ[var_name]
+        return cast_to(os.environ[var_name])
     except KeyError:
         raise ImproperlyConfigured(var_name)
+    except ValueError:
+        raise ValueError("Bad environment variable casting.")
 
 
 @dataclass
-class Database:
-    client: MongoClient
-    db: MongoDatabase
+class MongoDB:
+    connection_string: str
+    name: str
+    collection_name: str
+
+
+@dataclass
+class Redis:
+    location: str
+    db_num: int
 
 
 @dataclass
@@ -55,8 +62,9 @@ class TelegramBot:
 @dataclass
 class Config:
     tg_bot: TelegramBot
-    db: Database
+    mongo_db: MongoDB
     resource_manager: ResourceManager
+    redis: Redis
 
 
 def load_config() -> Config:
@@ -67,13 +75,20 @@ def load_config() -> Config:
     BASE_DIR: str = Path(__file__).resolve().parent.parent
 
     # Telegram bot configuration
-    token: str = get_env_variable("BOT_TOKEN")
-    tg_bot: TelegramBot = TelegramBot(token=token)
+    tg_bot: TelegramBot = TelegramBot(token=get_env_variable("BOT_TOKEN"))
 
     # MongoDB configucation
-    client: MongoClient = MongoClient(get_env_variable("CONNECTION_STRING"))
-    mongodb: MongoDatabase = client[get_env_variable("DATABASE_NAME")]
-    db: Database = Database(client=client, db=mongodb)
+    mongo_db: MongoDB = MongoDB(
+        connection_string=get_env_variable("CONNECTION_STRING"),
+        name=get_env_variable("DATABASE_NAME"),
+        collection_name="User",
+    )
+
+    # Redis configuration
+    redis: Redis = Redis(
+        location=get_env_variable("REDIS_LOCATION"),
+        db_num=get_env_variable("REDIS_DB_NUM", int),
+    )
 
     # Resource manager configuration
     RESOURCES_PATH: str = os.path.join(BASE_DIR, "resources/")
@@ -82,4 +97,9 @@ def load_config() -> Config:
         RESOURCES_PATH=RESOURCES_PATH, resources=resources
     )
 
-    return Config(tg_bot=tg_bot, db=db, resource_manager=resources_manager)
+    return Config(
+        tg_bot=tg_bot,
+        mongo_db=mongo_db,
+        redis=redis,
+        resource_manager=resources_manager,
+    )

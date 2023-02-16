@@ -6,9 +6,11 @@ LEXICON_EN: dict[str, str] = {
         " FBI Academy.\n\n"
         "FBI recruits take this test to become FBI agents. PFT consists"
         " of five events: sit-ups, sprint, push-ups, running, pull-ups.\n\n"
-        "<b>Let's meet and get started...</b>"
+        "<b>Let's meet and get started... Choose your sex:</b>"
     ),
     "table_caption": "Scoring Table",
+    "btn_male": "Male",
+    "btn_female": "Female",
 }
 
 # "<b>PFT consists of five events</b>:\n\n"

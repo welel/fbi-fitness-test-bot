@@ -2,16 +2,13 @@ from typing import Literal
 
 from pymongo.collection import Collection
 
-from config import Database, load_config
+from database.mongo import Database
 from errors.errors import UserAlreadyExists, UserDoesNotExists
 from .models import User, TestResult
 
 
-database: Database = load_config().db
-
-
 class UserDataAccessObject:
-    collection: Collection = database.db["User"]
+    collection: Collection = Database.get_collection()
 
     @classmethod
     def create(

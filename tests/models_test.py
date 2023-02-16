@@ -2,7 +2,7 @@ import pytest
 from pydantic import ValidationError
 from pymongo.collection import Collection
 
-from config import Database, load_config
+from database.mongo import Database
 from errors import errors
 from models.dao import UserDataAccessObject
 from models.models import TestResult, User
@@ -53,14 +53,13 @@ class TestModel:
 class TestDao:
     @pytest.fixture()
     def dao(self):
-        db: Database = load_config().db
-        test_collection: Collection = db.db["UserTest"]
+        test_collection: Collection = Database.get_collection("UserTest")
         UserDataAccessObject.collection = test_collection
 
         yield
 
         UserDataAccessObject.collection.delete_many({})
-        db.client.close()
+        test_collection.database.client.close()
 
     def test_create(self, dao):
         user = UserDataAccessObject.create(id=1, sex="male")
