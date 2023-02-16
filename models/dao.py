@@ -11,7 +11,7 @@ class UserDataAccessObject:
     collection: Collection = Database.get_collection()
 
     @classmethod
-    def create(
+    async def create(
         cls,
         id: int,
         sex: Literal["male", "female"],
@@ -24,7 +24,7 @@ class UserDataAccessObject:
         return user
 
     @classmethod
-    def update(cls, user: User) -> User:
+    async def update(cls, user: User) -> User:
         result = cls.collection.update_one(
             {"id": user.id}, {"$set": user.dict()}
         )
@@ -33,7 +33,7 @@ class UserDataAccessObject:
         return user
 
     @classmethod
-    def get(cls, id: int) -> User:
+    async def get(cls, id: int) -> User:
         if not isinstance(id, int):
             raise ValueError
         user_data = cls.collection.find_one({"id": id})

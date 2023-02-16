@@ -11,6 +11,10 @@ LEXICON_EN: dict[str, str] = {
     "table_caption": "Scoring Table",
     "btn_male": "Male",
     "btn_female": "Female",
+    "start_warning": "You have already started me. /help",
+    "sex_warning": "Please select your sex to get started.",
+    "registered": "Welcome on the board, let's get started /help",
+    "sex_pressed_warning": "You have already choosen sex. /help",
 }
 
 # "<b>PFT consists of five events</b>:\n\n"

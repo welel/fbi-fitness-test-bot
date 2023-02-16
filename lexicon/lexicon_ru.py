@@ -11,6 +11,10 @@ LEXICON_RU: dict[str, str] = {
     "table_caption": "Таблица норматива",
     "btn_male": "Мужчина",
     "btn_female": "Женщина",
+    "start_warning": "Вы уже запустили меня. /help",
+    "sex_warning": "Пожалуйста, выберите свой пол для начала.",
+    "registered": "Добро пожаловать, давайте начнем /help",
+    "sex_pressed_warning": "Вы уже выбрали пол. /help",
 }
 
 # "<b>PFT состоит из пяти упражнений</b>:\n\n"
