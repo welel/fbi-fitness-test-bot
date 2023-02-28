@@ -72,6 +72,14 @@ LEXICON_RU: dict[str, str] = {
     "btn_male": "Мужчина",
     "btn_female": "Женщина",
     "btn_more_info": "Больше информации",
+    # Form
+    # Forms
+    "test_result_form_header": "Давайте посчитаем ваш результат...",
+    "test_result_form_situps": "Сколько вы выполнили скручиваний?",
+    "test_result_form_sprint": "Как быстро вы пробежали 300 метров?",
+    "test_result_form_pushups": "Сколько вы выполнили отжиманий?",
+    "test_result_form_running": "За сколько вы пробежали 2.46 км?",
+    "test_result_form_pullups": "Сколько раз вы подтянулись?",
     # Warnings
     "start_warning": "Вы уже запустили меня. /help",
     "sex_warning": "Пожалуйста, выберите свой пол для начала.",

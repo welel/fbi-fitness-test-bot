@@ -32,3 +32,9 @@ class UserDoesNotExists(Exception):
         self.user_id = id
         self.message = f"User with id {id} doesn't exists in the database."
         super().__init__(self.message, *args, **kwargs)
+
+
+class CalculationError(Exception):
+    """Raises when `TestResult` can't calculate test result."""
+
+    pass

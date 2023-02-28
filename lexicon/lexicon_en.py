@@ -26,7 +26,7 @@ LEXICON_EN: dict[str, str] = {
         " to pass the overall fitness test. "
         "The specific passing score requirements may vary based on age"
         " and gender.\n\n"
-        "Score table: \table\n\n"
+        "Score table: \\table\n\n"
         "Rules and the protocol video:\n"
         "https://youtube.com/watch?v=a1Ydgfbfmmo&si=EnSIkaIECMiOmarE"
     ),
@@ -83,8 +83,23 @@ LEXICON_EN: dict[str, str] = {
     "btn_male": "Male",
     "btn_female": "Female",
     "btn_more_info": "More information",
+    # Forms
+    "test_result_form_header": "Let's calculate your result, fill the data...",
+    "test_result_form_situps": "How many sit-ups did you do?",
+    "test_result_form_sprint": "How long did you run 300 meters?",
+    "test_result_form_pushups": "How many push-ups did you do?",
+    "test_result_form_running": "How long did you run 1.5 miles?",
+    "test_result_form_pullups": "How many pull-ups did you do?",
     # Warnings
     "start_warning": "You have already started me. /help",
     "sex_warning": "Please select your sex to get started.",
     "sex_pressed_warning": "You have already choosen sex. /help",
+    # Validation
+    "repetition_not_integer": "You should write a positive number...",
+    "wrong_seconds_format": (
+        "Write the value in following format:\n'01:23' (sec:ms)\n"
+    ),
+    "wrong_milliseconds_format": (
+        "Write the value in following format:\n'1.23' (sec.ms)\n"
+    ),
 }

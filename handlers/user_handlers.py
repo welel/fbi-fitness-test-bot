@@ -3,18 +3,25 @@ from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
+from pydantic import ValidationError
 
 from errors import errors
 from filters.pagination import MoreInfoPaginator
 from lexicon.lexicon_en import LEXICON_EN
 from media.resources import get_table_image
 from models.dao import UserDataAccessObject
+from models.models import TestResult
 from keyboards.keyboards import (
     sex_keyboard,
     more_info_keyboard,
     get_more_info_pagination_kb,
 )
-from states.states import FSMStart
+from models.validators import (
+    validate_repetitions,
+    validate_seconds,
+    validate_milliseconds,
+)
+from states.states import FSMStart, TestResultForm
 
 
 router: Router = Router()
@@ -88,3 +95,72 @@ async def process_more_info(callback: CallbackQuery, page_num: int):
     except TelegramBadRequest as error:
         if not error.message.startswith("Bad Request: message is not modif"):
             raise
+
+
+@router.message(Command(commands=["calc"]))
+async def process_calc_command(message: Message, state: FSMContext):
+    await message.answer(
+        text=LEXICON_EN["test_result_form_header"]
+        + "\n\n"
+        + LEXICON_EN["test_result_form_situps"]
+    )
+    await state.set_state(TestResultForm.situps)
+
+
+@router.message(TestResultForm.situps)
+async def process_situps(message: Message, state: FSMContext) -> None:
+    situps = validate_repetitions(message.text)
+    if isinstance(situps, int):
+        await state.update_data(situps=situps)
+        await state.set_state(TestResultForm.sprint)
+        await message.answer(text=LEXICON_EN["test_result_form_sprint"])
+    else:
+        await message.answer(text=situps)
+
+
+@router.message(TestResultForm.sprint)
+async def process_sprint(message: Message, state: FSMContext) -> None:
+    sprint = validate_milliseconds(message.text)
+    if isinstance(sprint, int):
+        await state.update_data(sprint=sprint)
+        await state.set_state(TestResultForm.pushups)
+        await message.answer(text=LEXICON_EN["test_result_form_pushups"])
+    else:
+        await message.answer(text=sprint)
+
+
+@router.message(TestResultForm.pushups)
+async def process_pushups(message: Message, state: FSMContext) -> None:
+    pushups = validate_repetitions(message.text)
+    if isinstance(pushups, int):
+        await state.update_data(pushups=pushups)
+        await state.set_state(TestResultForm.running)
+        await message.answer(text=LEXICON_EN["test_result_form_running"])
+    else:
+        await message.answer(text=pushups)
+
+
+@router.message(TestResultForm.running)
+async def process_running(message: Message, state: FSMContext) -> None:
+    running = validate_seconds(message.text)
+    if isinstance(running, int):
+        await state.update_data(running=running)
+        await state.set_state(TestResultForm.pullups)
+        await message.answer(text=LEXICON_EN["test_result_form_pullups"])
+    else:
+        await message.answer(text=running)
+
+
+@router.message(TestResultForm.pullups)
+async def process_pullups(message: Message, state: FSMContext) -> None:
+    pullups = validate_repetitions(message.text)
+    if isinstance(pullups, int):
+        await state.update_data(pullups=pullups)
+        data = await state.get_data()
+        await state.clear()
+        test_result = TestResult(**data)
+        user = await UserDataAccessObject.get(message.from_user.id)
+        test_result.calculate(sex=user.sex)
+        await message.answer(text=test_result.verbose())
+    else:
+        await message.answer(text=pullups)
