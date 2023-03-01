@@ -79,10 +79,23 @@ LEXICON_EN: dict[str, str] = {
         "• Lower back to the hanging position. This is one pull-up.\n"
         "• If you pause, you’re done."
     ),
+    "test_result": (
+        "<b>Test result</b>\n\n"
+        "Sit-ups: {situps}\n"
+        "Sprint: {sprint}\n"
+        "Push-ups: {pushups}\n"
+        "Running: {running}\n"
+        "Pull-ups: {pullups}\n\n"
+        "<b>Score:</b> {score}"
+    ),
+    "continue_pressed": "Continue...",
+    "result_saved": "Result is successfully saved.",
     # Buttons
     "btn_male": "Male",
     "btn_female": "Female",
     "btn_more_info": "More information",
+    "btn_result_save": "Save",
+    "btn_result_continue": "Continue",
     # Forms
     "test_result_form_header": "Let's calculate your result, fill the data...",
     "test_result_form_situps": "How many sit-ups did you do?",
@@ -94,6 +107,7 @@ LEXICON_EN: dict[str, str] = {
     "start_warning": "You have already started me. /help",
     "sex_warning": "Please select your sex to get started.",
     "sex_pressed_warning": "You have already choosen sex. /help",
+    "result_save_continue_warning": "You should save result or press continue.",
     # Validation
     "repetition_not_integer": "You should write a positive number...",
     "wrong_seconds_format": (

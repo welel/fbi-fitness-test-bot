@@ -5,7 +5,7 @@ from pymongo.collection import Collection
 from database.mongo import Database
 from errors import errors
 from models.dao import UserDataAccessObject
-from models.models import TestResult, User
+from models.models import TestResult, User, Sex
 
 
 class TestModel:
@@ -48,6 +48,11 @@ class TestModel:
         assert user.results == [result]
         with pytest.raises(ValidationError):
             User(results=["result"])
+
+    def test_results_verbose(self):
+        result = TestResult()
+        result.calculate(sex=Sex.MALE)
+        assert type(str(result)) == str
 
 
 class TestDao:

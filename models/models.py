@@ -5,6 +5,7 @@ from pydantic import BaseModel, validator, ValidationError
 from pydantic.fields import Field
 
 from errors.errors import CalculationError
+from lexicon.lexicon_en import LEXICON_EN
 
 from .calculation_data import TEST_TABLE
 
@@ -58,8 +59,15 @@ class TestResult(BaseModel):
         score += TestResult._get_score(self.running, sex, Exercise.RUNNING)
         self.score = score
 
-    def verbose(self) -> str:
-        return self.json()
+    def __str__(self) -> str:
+        result = self.dict().copy()
+        result["sprint"] = "{} sec {} ms".format(
+            result["sprint"] // 1000, result["sprint"] % 1000
+        )
+        result["running"] = "{} min {} sec".format(
+            result["running"] // 60, result["running"] % 60
+        )
+        return LEXICON_EN["test_result"].format(**result)
 
 
 class User(BaseModel):

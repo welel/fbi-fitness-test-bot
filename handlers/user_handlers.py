@@ -1,9 +1,8 @@
 from aiogram import Bot, F, Router
 from aiogram.exceptions import TelegramBadRequest
-from aiogram.filters import Command, CommandStart
+from aiogram.filters import Command, CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
-from pydantic import ValidationError
 
 from errors import errors
 from filters.pagination import MoreInfoPaginator
@@ -15,6 +14,7 @@ from keyboards.keyboards import (
     sex_keyboard,
     more_info_keyboard,
     get_more_info_pagination_kb,
+    calc_result_keyboard,
 )
 from models.validators import (
     validate_repetitions,
@@ -157,10 +157,49 @@ async def process_pullups(message: Message, state: FSMContext) -> None:
     if isinstance(pullups, int):
         await state.update_data(pullups=pullups)
         data = await state.get_data()
-        await state.clear()
+        await state.set_state(TestResultForm.save_continue)
         test_result = TestResult(**data)
         user = await UserDataAccessObject.get(message.from_user.id)
         test_result.calculate(sex=user.sex)
-        await message.answer(text=test_result.verbose())
+        await message.answer(
+            text=str(test_result), reply_markup=calc_result_keyboard
+        )
     else:
         await message.answer(text=pullups)
+
+
+@router.callback_query(
+    F.data == "result_save", StateFilter(TestResultForm.save_continue)
+)
+async def process_save_result_buttons_press(
+    callback: CallbackQuery, state: FSMContext
+):
+    await callback.answer()
+
+    data = await state.get_data()
+    test_result = TestResult(**data)
+    user = await UserDataAccessObject.get(callback.from_user.id)
+    test_result.calculate(sex=user.sex)
+    user.results.append(test_result)
+    await UserDataAccessObject.update(user)
+
+    await state.clear()
+    await callback.message.answer(text=LEXICON_EN["result_saved"])
+
+
+@router.callback_query(
+    F.data == "result_continue", StateFilter(TestResultForm.save_continue)
+)
+async def process_continue_result_buttons_press(
+    callback: CallbackQuery, state: FSMContext
+):
+    await callback.answer(text=LEXICON_EN["continue_pressed"])
+    await state.clear()
+
+
+@router.message(TestResultForm.save_continue)
+async def process_save_continue_warning(message: Message, state: FSMContext):
+    await message.answer(
+        LEXICON_EN["result_save_continue_warning"],
+        reply_markup=calc_result_keyboard,
+    )

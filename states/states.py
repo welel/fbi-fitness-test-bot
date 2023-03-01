@@ -12,3 +12,4 @@ class TestResultForm(StatesGroup):
     pushups = State()
     running = State()
     pullups = State()
+    save_continue = State()

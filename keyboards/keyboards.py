@@ -30,6 +30,21 @@ more_info_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(
 )
 
 
+calc_result_keyboard: InlineKeyboardMarkup = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text=LEXICON_EN["btn_result_save"], callback_data="result_save"
+            ),
+            InlineKeyboardButton(
+                text=LEXICON_EN["btn_result_continue"],
+                callback_data="result_continue",
+            ),
+        ]
+    ]
+)
+
+
 def get_more_info_pagination_kb(current_page: int) -> InlineKeyboardMarkup:
     prev_page = current_page - 1 if current_page - 1 >= 1 else 1
     next_page = current_page + 1 if current_page + 1 <= 5 else 5
